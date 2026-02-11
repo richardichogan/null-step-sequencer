@@ -495,8 +495,11 @@ void StepSequencerAudioProcessor::invertPattern()
 
 void StepSequencerAudioProcessor::reversePattern()
 {
-    // Reverse the order of steps
-    std::reverse(steps->begin(), steps->end());
+    // Reverse the order of steps (only within the active numSteps range)
+    int numSteps = (int)*apvts.getRawParameterValue("numSteps");
+    if (numSteps > 0 && numSteps <= (int)steps->size()) {
+        std::reverse(steps->begin(), steps->begin() + numSteps);
+    }
 }
 
 void StepSequencerAudioProcessor::euclideanPattern(int hits, int steps)
