@@ -763,9 +763,9 @@ void StepSequencerAudioProcessorEditor::resized()
     reverseButton.setBounds(transformRow.removeFromLeft(70));
     transformRow.removeFromLeft(20);
     
-    auto euclideanArea = transformRow.removeFromLeft(150);
-    euclideanLabel.setBounds(euclideanArea.removeFromTop(15));
-    euclideanCombo.setBounds(euclideanArea);
+    euclideanLabel.setBounds(transformRow.removeFromLeft(70));
+    transformRow.removeFromLeft(5);
+    euclideanCombo.setBounds(transformRow.removeFromLeft(100));
 
     area.removeFromTop(10);
     
