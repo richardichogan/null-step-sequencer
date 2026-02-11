@@ -7,6 +7,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <chrono>

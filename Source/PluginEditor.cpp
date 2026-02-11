@@ -323,7 +323,6 @@ StepSequencerAudioProcessorEditor::StepSequencerAudioProcessorEditor (StepSequen
             audioProcessor.apvts.getParameter("swing")->setValueNotifyingHost(
                 audioProcessor.apvts.getParameter("swing")->getValue()
             );
-            euclideanCombo.setSelectedId(1, juce::dontSendNotification);
         }
     };
 
@@ -771,7 +770,7 @@ void StepSequencerAudioProcessorEditor::resized()
     area.removeFromTop(10);
     
     // === LEFT SIDEBAR ===
-    auto leftSidebar = area.removeFromLeft(160);
+    auto leftSidebar = area.removeFromLeft(180);
     
     tracksLabel.setBounds(leftSidebar.removeFromTop(20));
     leftSidebar.removeFromTop(5);
