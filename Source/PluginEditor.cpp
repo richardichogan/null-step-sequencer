@@ -257,6 +257,75 @@ StepSequencerAudioProcessorEditor::StepSequencerAudioProcessorEditor (StepSequen
     // Init label from current state
     octaveValueLabel.setText(juce::String((int)*audioProcessor.apvts.getRawParameterValue("octave")), juce::dontSendNotification);
 
+    // === PATTERN TRANSFORM BUTTONS ===
+    addAndMakeVisible(clearButton);
+    clearButton.setButtonText("Clear");
+    clearButton.onClick = [this] {
+        audioProcessor.clearPattern();
+        updateInspector();
+        repaint();
+        // Force DAW to save
+        audioProcessor.apvts.getParameter("swing")->setValueNotifyingHost(
+            audioProcessor.apvts.getParameter("swing")->getValue()
+        );
+    };
+
+    addAndMakeVisible(invertButton);
+    invertButton.setButtonText("Invert");
+    invertButton.onClick = [this] {
+        audioProcessor.invertPattern();
+        updateInspector();
+        repaint();
+        // Force DAW to save
+        audioProcessor.apvts.getParameter("swing")->setValueNotifyingHost(
+            audioProcessor.apvts.getParameter("swing")->getValue()
+        );
+    };
+
+    addAndMakeVisible(reverseButton);
+    reverseButton.setButtonText("Reverse");
+    reverseButton.onClick = [this] {
+        audioProcessor.reversePattern();
+        updateInspector();
+        repaint();
+        // Force DAW to save
+        audioProcessor.apvts.getParameter("swing")->setValueNotifyingHost(
+            audioProcessor.apvts.getParameter("swing")->getValue()
+        );
+    };
+
+    addAndMakeVisible(euclideanLabel);
+    euclideanLabel.setText("Euclidean", juce::dontSendNotification);
+    euclideanLabel.setJustificationType(juce::Justification::centred);
+
+    addAndMakeVisible(euclideanCombo);
+    euclideanCombo.addItem("Off", 1);
+    euclideanCombo.addItem("3/8", 2);
+    euclideanCombo.addItem("5/8", 3);
+    euclideanCombo.addItem("5/16", 4);
+    euclideanCombo.addItem("7/16", 5);
+    euclideanCombo.addItem("9/16", 6);
+    euclideanCombo.setSelectedId(1, juce::dontSendNotification);
+    euclideanCombo.onChange = [this] {
+        int id = euclideanCombo.getSelectedId();
+        int numSteps = (int)*audioProcessor.apvts.getRawParameterValue("numSteps");
+        
+        if (id == 2) audioProcessor.euclideanPattern(3, 8);
+        else if (id == 3) audioProcessor.euclideanPattern(5, 8);
+        else if (id == 4) audioProcessor.euclideanPattern(5, 16);
+        else if (id == 5) audioProcessor.euclideanPattern(7, 16);
+        else if (id == 6) audioProcessor.euclideanPattern(9, 16);
+        
+        if (id != 1) {
+            updateInspector();
+            repaint();
+            // Force DAW to save
+            audioProcessor.apvts.getParameter("swing")->setValueNotifyingHost(
+                audioProcessor.apvts.getParameter("swing")->getValue()
+            );
+            euclideanCombo.setSelectedId(1, juce::dontSendNotification);
+        }
+    };
 
     // === TRACK CONTROL BUTTONS ===
     addAndMakeVisible(addTrackButton);
@@ -277,6 +346,35 @@ StepSequencerAudioProcessorEditor::StepSequencerAudioProcessorEditor (StepSequen
         rebuildTrackControls();
         updateTracksLabel();
         repaint();
+    };
+
+    addAndMakeVisible(duplicateTrackButton);
+    duplicateTrackButton.setButtonText("Dup");
+    duplicateTrackButton.setTooltip("Duplicate Current Track");
+    duplicateTrackButton.onClick = [this] {
+        // Duplicate the current track
+        if (audioProcessor.currentTrack >= 0 && audioProcessor.currentTrack < audioProcessor.getNumTracks()) {
+            auto& currentTrack = audioProcessor.tracks[audioProcessor.currentTrack];
+            
+            // Create a copy of the current track
+            std::vector<StepSequencerAudioProcessor::Step> newTrack = currentTrack;
+            audioProcessor.tracks.push_back(newTrack);
+            audioProcessor.trackRepeat.push_back(audioProcessor.trackRepeat[audioProcessor.currentTrack]);
+            audioProcessor.trackEnabled.push_back(true);
+            
+            // Switch to the new duplicated track
+            audioProcessor.switchToTrack(audioProcessor.getNumTracks() - 1);
+            
+            rebuildTrackControls();
+            updateTracksLabel();
+            updateInspector();
+            repaint();
+            
+            // Force DAW to save
+            audioProcessor.apvts.getParameter("swing")->setValueNotifyingHost(
+                audioProcessor.apvts.getParameter("swing")->getValue()
+            );
+        }
     };
 
     // Initialize track controls
@@ -654,6 +752,24 @@ void StepSequencerAudioProcessorEditor::resized()
 
     area.removeFromTop(10);
     
+    // === PATTERN TRANSFORM ROW ===
+    auto transformRow = area.removeFromTop(35);
+    
+    clearButton.setBounds(transformRow.removeFromLeft(70));
+    transformRow.removeFromLeft(5);
+    
+    invertButton.setBounds(transformRow.removeFromLeft(70));
+    transformRow.removeFromLeft(5);
+    
+    reverseButton.setBounds(transformRow.removeFromLeft(70));
+    transformRow.removeFromLeft(20);
+    
+    auto euclideanArea = transformRow.removeFromLeft(150);
+    euclideanLabel.setBounds(euclideanArea.removeFromTop(15));
+    euclideanCombo.setBounds(euclideanArea);
+
+    area.removeFromTop(10);
+    
     // === LEFT SIDEBAR ===
     auto leftSidebar = area.removeFromLeft(160);
     
@@ -665,6 +781,8 @@ void StepSequencerAudioProcessorEditor::resized()
     addTrackButton.setBounds(addRemoveRow.removeFromLeft(40));
     addRemoveRow.removeFromLeft(5);
     removeTrackButton.setBounds(addRemoveRow.removeFromLeft(40));
+    addRemoveRow.removeFromLeft(5);
+    duplicateTrackButton.setBounds(addRemoveRow.removeFromLeft(50));
     leftSidebar.removeFromTop(10);
     
     // Show all track buttons with enable toggles and repeat dials (dynamic)
