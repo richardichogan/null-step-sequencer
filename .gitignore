@@ -1,0 +1,11 @@
+build/
+*.DS_Store
+*.user
+*.autosave
+.vscode/
+.idea/
+*.o
+*.d
+*.so
+*.dylib
+*.app
