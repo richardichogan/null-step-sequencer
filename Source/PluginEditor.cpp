@@ -775,13 +775,13 @@ void StepSequencerAudioProcessorEditor::resized()
     tracksLabel.setBounds(leftSidebar.removeFromTop(20));
     leftSidebar.removeFromTop(5);
     
-    // +/- buttons to add/remove tracks
-    auto addRemoveRow = leftSidebar.removeFromTop(25);
-    addTrackButton.setBounds(addRemoveRow.removeFromLeft(40));
+    // +/- Dup buttons to add/remove/duplicate tracks
+    auto addRemoveRow = leftSidebar.removeFromTop(30);
+    addTrackButton.setBounds(addRemoveRow.removeFromLeft(35));
     addRemoveRow.removeFromLeft(5);
-    removeTrackButton.setBounds(addRemoveRow.removeFromLeft(40));
+    removeTrackButton.setBounds(addRemoveRow.removeFromLeft(35));
     addRemoveRow.removeFromLeft(5);
-    duplicateTrackButton.setBounds(addRemoveRow.removeFromLeft(50));
+    duplicateTrackButton.setBounds(addRemoveRow.removeFromLeft(60));
     leftSidebar.removeFromTop(10);
     
     // Show all track buttons with enable toggles and repeat dials (dynamic)
