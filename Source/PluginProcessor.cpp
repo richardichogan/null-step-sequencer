@@ -207,12 +207,17 @@ void StepSequencerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
             // Advance Step
             int numSteps = (int) *apvts.getRawParameterValue("numSteps");
             
+            // Advance to next step
+            currentStepIndex++;
+            
             // Check if we finished a full sequence loop
-            if (currentStepIndex >= numSteps - 1) {
-                // We reached the end of the sequence
+            if (currentStepIndex >= numSteps) {
+                currentStepIndex = 0;
+                
+                // We completed one full loop
                 barsPlayedOnCurrentTrack++;
                 
-                // Track Switch Logic: Count loops, not bars
+                // Track Switch Logic: Check if we've played enough loops
                 if (barsPlayedOnCurrentTrack >= trackRepeat[currentTrack]) {
                     barsPlayedOnCurrentTrack = 0;
                     
@@ -231,9 +236,6 @@ void StepSequencerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
                         attempts++;
                     }
                 }
-                currentStepIndex = 0;
-            } else {
-                currentStepIndex++;
             }
             
             // Trigger New Note
