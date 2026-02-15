@@ -145,8 +145,22 @@ void StepSequencerAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
             isPlaying = false;
             samplesRemainingForGate = 0;
             accumulatedSamples = 0;
+            
+            // RESET TO START: Go back to track 1, step 1
+            currentStepIndex = 0;
+            barsPlayedOnCurrentTrack = 0;
+            beatsPlayedInCurrentBar = 0;
+            switchToTrack(0); // Back to first track
         }
         return;
+    }
+    
+    // Just started playing - ensure we're at the beginning
+    if (!isPlaying) {
+        currentStepIndex = 0;
+        barsPlayedOnCurrentTrack = 0;
+        beatsPlayedInCurrentBar = 0;
+        accumulatedSamples = 0;
     }
     
     isPlaying = true;
